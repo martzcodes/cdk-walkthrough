@@ -1,9 +1,25 @@
-import * as cdk from '@aws-cdk/core';
+import { Stack, Construct, StackProps, RemovalPolicy } from '@aws-cdk/core';
+import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
+import { join } from 'path';
+import { Runtime } from '@aws-cdk/aws-lambda';
+import { AttributeType, Table } from '@aws-cdk/aws-dynamodb';
+import config from 'config';
+import { HackathonTableConstruct } from './table-construct';
 
-export class HackathonTutorialStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+export interface HackathonStackProps extends StackProps{
+  original?: HackathonTutorialStack;
+}
+
+export class HackathonTutorialStack extends Stack {
+  table: Table;
+
+  constructor(scope: Construct, id: string, props?: HackathonStackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const { namespace } = config.get<{ namespace: string }>('cdk');
+
+    const table = new HackathonTableConstruct(this, `someTable`);
+    this.table = table.table;
+
   }
 }
